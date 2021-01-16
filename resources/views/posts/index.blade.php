@@ -1,11 +1,6 @@
 @extends('layouts.app')
 @section('content')
-@if ($message = Session::get('success'))
-    <div class="alert alert-success alert-block">
-        <button type="button" class="close" data-dismiss="alert">×</button>    
-        <strong>{{ $message }}</strong>
-    </div>
-@endif
+
 <div class="d-flex justify-content-end mb-2">
     <a href="{{ route('posts.create')}}" class="btn btn-success">Add Post</a>
 </div>

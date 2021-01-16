@@ -1,11 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-@if ($message = Session::get('success'))
-    <div class="alert alert-success">
-        <p>{{ $message }}</p>
-    </div>
-@endif
+
 
 <div class="d-flex justify-content-end mb-2">
     <a href="{{ route('categories.create')}}" class="btn btn-success">Add Category</a>
