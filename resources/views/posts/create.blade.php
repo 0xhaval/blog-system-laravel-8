@@ -63,6 +63,27 @@
                     </select>
                 </div>
 
+                @if ($tags->count() > 0)
+                <div class="form-group">
+                    <label for="tags">Tags</label>
+                    <!-- use [] with tag name beacuse the tag is array of string -->
+                    <select name="tags[]" id="tags" class="form-control tags-selector" multiple>
+                        @foreach ($tags as $tag)
+                            <option value="{{ $tag->id }}"
+                                @if (isset($post))
+                                    @if ($post->hasTag($tag->id))
+                                        selected
+                                    @endif
+                                @endif
+                                >
+                                {{ $tag->name}}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>  
+                @endif
+
+
                 <div class="form-group">
                     <button type="submit" class="btn btn-success">
                         {{ isset($post) ? 'Update Post' : 'Add Post'}}
@@ -82,9 +103,16 @@
         enableTime: true,
     })
 </script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.tags-selector').select2();
+    });
+</script>
 @endsection
 
 @section('css')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/trix/1.3.1/trix.css" integrity="sha512-CWdvnJD7uGtuypLLe5rLU3eUAkbzBR3Bm1SFPEaRfvXXI2v2H5Y0057EMTzNuGGRIznt8+128QIDQ8RqmHbAdg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 @endsection

@@ -86,6 +86,9 @@ class TagsController extends Controller
      */
     public function destroy(Tag $tag)
     {
+        if($tag->posts()->count() > 0){
+            return redirect()->back()->with('error', 'Tag can\'t be deleted beacuse it has some posts.');
+        }
         $tag->delete();
         return redirect()->route('tags.index')
            ->with('success', 'Tag deleted successfluy');

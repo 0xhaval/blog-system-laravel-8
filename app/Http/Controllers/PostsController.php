@@ -6,6 +6,7 @@ use App\Http\Requests\Posts\CreatePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
 
 class PostsController extends Controller
 {
@@ -30,7 +31,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('posts.create')->with('categories', Category::all());
+        return view('posts.create')->with('categories', Category::all())->with('tags', Tag::all());
     }
 
     /**
@@ -39,22 +40,28 @@ class PostsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CreatePostRequest $post)
+    public function store(CreatePostRequest $request)
     {
         // upload image to storage
         //$imageName = time().'.'.$post->image->extension();
      
         //$post->image->move(public_path('images'), $imageName);
-        $img = $post->image->store('posts');
+        $img = $request->image->store('posts');
         // create post
-        Post::create([
-            'title' => $post->title,
-            'description' => $post->description,
-            'content' => $post->content,
+        $post = Post::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'content' => $request->content,
             'image' => $img,
-            'published_at' => $post->published_at,
-            'category_id' => $post->category // use category instead category_id beacuse the name in form is category 
+            'published_at' => $request->published_at,
+            'category_id' => $request->category // use category instead category_id beacuse the name in form is category 
         ]);
+
+        if($request->tags){
+            // attach method is belong to Many relationship 
+            $post->tags()->attach($request->tags);
+        }
+        
         // redirect user 
         return redirect()->route('posts.index')->with('success', 'Post created successfully');
 
@@ -79,7 +86,9 @@ class PostsController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.create')->with('post', $post)->with('categories', Category::all());
+        return view('posts.create')->with('post', $post)
+                                ->with('categories', Category::all())
+                                ->with('tags', Tag::all());
     }
 
     /**
@@ -92,7 +101,7 @@ class PostsController extends Controller
     public function update(UpdatePostRequest $request,Post $post)
     {
         // for more secure use only to prevent hacker for request another field 
-        $data = $request->only(['title', 'description', 'content', 'published_at', 'category_id']);
+        $data = $request->only(['title', 'description', 'content', 'published_at', 'category']);
 
         // check if new image 
         if($request->hasFile('image')){
@@ -107,6 +116,9 @@ class PostsController extends Controller
         }
         
 
+        if($request->tags){
+            $post->tags()->sync($request->tags);
+        }
         // upload attributes
         $post->update($data);
 
