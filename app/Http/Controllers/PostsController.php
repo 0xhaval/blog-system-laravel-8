@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Posts\CreatePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
+use App\Models\Category;
 use App\Models\Post;
 
 class PostsController extends Controller
@@ -25,7 +26,7 @@ class PostsController extends Controller
      */
     public function create()
     {
-        return view('posts.create');
+        return view('posts.create')->with('categories', Category::all());
     }
 
     /**
@@ -47,7 +48,8 @@ class PostsController extends Controller
             'description' => $post->description,
             'content' => $post->content,
             'image' => $img,
-            'published_at' => $post->published_at
+            'published_at' => $post->published_at,
+            'category_id' => $post->category // use category instead category_id beacuse the name in form is category 
         ]);
         // redirect user 
         return redirect()->route('posts.index')->with('success', 'Post created successfully');
@@ -73,7 +75,7 @@ class PostsController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.create')->with('post', $post);
+        return view('posts.create')->with('post', $post)->with('categories', Category::all());
     }
 
     /**
@@ -86,7 +88,7 @@ class PostsController extends Controller
     public function update(UpdatePostRequest $request,Post $post)
     {
         // for more secure use only to prevent hacker for request another field 
-        $data = $request->only(['title', 'description', 'content', 'published_at']);
+        $data = $request->only(['title', 'description', 'content', 'published_at', 'category_id']);
 
         // check if new image 
         if($request->hasFile('image')){
