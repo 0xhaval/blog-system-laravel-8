@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Posts\CreatePostRequest;
 use App\Http\Requests\Posts\UpdatePostRequest;
 use App\Models\Post;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class PostsController extends Controller
 {
@@ -97,7 +95,7 @@ class PostsController extends Controller
         $img = $request->image->store('posts');
 
         // delete old one 
-        Storage::delete($post->image);
+        $post->deleteImage();
 
         $data['image'] = $img;
         }
@@ -118,12 +116,13 @@ class PostsController extends Controller
      */
     public function destroy($id)
     {
-        // I use Find method to search for exact trashed post
+        // use $id instead Model binding post beacuse this post is trashed 
         $post = Post::withTrashed()->where('id', $id)->firstOrFail();
+
         // here I use soft delete to delete post, 
         // after delete post, the model will inset current time to deleted_at field 
         if($post->trashed()){
-            Storage::delete($post->image);  // delete image when delete post
+            $post->deleteImage();  // delete image when delete post
             $post->forceDelete();
         }else{
             $post->delete();
