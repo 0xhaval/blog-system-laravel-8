@@ -19,7 +19,7 @@
                 <th>Category</th>
                 <!-- for two button Edit and Trash -->
                 <th></th> 
-                <td></td>
+                <th></th>
             </thead>
 
             <tbody>
